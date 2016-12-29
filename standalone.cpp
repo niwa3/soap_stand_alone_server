@@ -48,7 +48,7 @@ int main(){
   server.destroy();
 }
 
-int RManagerService::data(ns1__transport *req, ns1__transport &res){
+int RManagerService::register_(ns1__transport *req, ns1__transport &res){
   std::vector<ns1__relation>::iterator itr;
   std::unique_ptr<pqxx::connection> conn(new pqxx::connection("dbname=test user=testuser password=testpass"));
   std::unique_ptr<pqxx::work> T(new pqxx::work(*conn));
@@ -63,6 +63,15 @@ int RManagerService::data(ns1__transport *req, ns1__transport &res){
         +","+std::to_string(itr->interval)+")");
   }
   T.get()->commit();
-  res=*req;
-    return SOAP_OK;
+  res.header.massage="OK";
+  return SOAP_OK;
 }
+
+int RManagerService::change(ns1__transport *req, ns1__transport &res){
+  return SOAP_OK;
+}
+
+int RManagerService::delete_(ns1__transport *req, ns1__transport &res){
+  return SOAP_OK;
+}
+
