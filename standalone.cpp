@@ -68,10 +68,30 @@ int RManagerService::register_(ns1__transport *req, ns1__transport &res){
 }
 
 int RManagerService::change(ns1__transport *req, ns1__transport &res){
+  std::vector<ns1__relation>::iterator itr;
+  std::unique_ptr<pqxx::connection> conn(new pqxx::connection("dbname=test user=testuser password=testpass"));
+  std::unique_ptr<pqxx::work> T(new pqxx::work(*conn));
+  for(itr=req->body.relation.begin(); itr!=req->body.relation.end();itr++){
+    T.get()->exec(
+        "UPDATE server SET privacy_lvl = " + std::to_string(itr->privacy_lvl)
+        + " WHERE relationid = " + std::to_string(itr->relation_id));
+  }
+  T.get()->commit();
+  res.header.massage="OK";
   return SOAP_OK;
 }
 
 int RManagerService::delete_(ns1__transport *req, ns1__transport &res){
+  std::vector<ns1__relation>::iterator itr;
+  std::unique_ptr<pqxx::connection> conn(new pqxx::connection("dbname=test user=testuser password=testpass"));
+  std::unique_ptr<pqxx::work> T(new pqxx::work(*conn));
+  for(itr=req->body.relation.begin(); itr!=req->body.relation.end();itr++){
+    T.get()->exec(
+        "DELETE FROM server"
+        " WHERE relationid = " + std::to_string(itr->relation_id));
+  }
+  T.get()->commit();
+  res.header.massage="OK";
   return SOAP_OK;
 }
 
